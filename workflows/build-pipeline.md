@@ -61,6 +61,10 @@ cmake --build iree-build/ --target iree-opt
 cmake --build iree-build/ --target iree-test-deps
 ```
 
+### Tools Location
+
+After building, the IREE compiler tools (such as `iree-opt`, `iree-compile`) are located in `iree-build/tools/`.
+
 ## Common Configurations
 
 ### Debug Build

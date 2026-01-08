@@ -6,6 +6,16 @@ This document collects debugging techniques for MLIR and IREE development.
 
 <!-- TODO: Add more techniques as you discover them -->
 
+## General Debugging Tips
+
+### Pattern Debugging
+- When debugging patterns, try printing the root op of the pattern, and other relevant ops to get an idea of the expected transformation
+- When debugging, try dumping output to a file, and then referencing the file to find issues
+
+### Debug Printing Best Practices
+- Ensure that all `llvm::dbgs()` prints are wrapped in `LLVM_DEBUG()`, or use the `LDBG()` macro from `llvm/Support/DebugLog.h` to avoid printing unconditionally
+- When debugging test failures, add concise `llvm::dbgs()` prints to show additional information when running the test
+
 ## MLIR Debugging
 
 ### Print IR at Various Stages

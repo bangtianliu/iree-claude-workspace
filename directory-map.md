@@ -10,9 +10,10 @@ These aliases are used by `/stage-review` and other commands to resolve short na
 
 | Alias | Path | Notes |
 |-------|------|-------|
-| iree | /path/to/iree | Main IREE repository |
-| llvm-project | /path/to/llvm-project | LLVM/MLIR monorepo |
-| workspace | /home/mdawkins/claude-sandbox/iree-claude-workspace | This meta-workspace |
+| iree | /home/mdawkins/worktrees/iree-transpose-load/iree | Main IREE repository |
+| llvm-project | /home/mdawkins/worktrees/iree-transpose-load/iree/third_party/llvm-project | LLVM/MLIR monorepo |
+| workspace | /home/mdawkins/worktrees/iree-transpose-load/iree-claude-workspace | This meta-workspace |
+| iree-build | /home/mdawkins/worktrees/iree-transpose-load/iree-build | IREE build directory |
 
 ### Adding New Repositories
 

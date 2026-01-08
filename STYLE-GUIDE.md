@@ -67,13 +67,29 @@ Examples:
 ## Testing Conventions
 
 ### Lit Tests
+- Write unit lit tests for compiler transformations using LLVM's FileCheck tool
+- Tests will have a set of `// RUN:` lines with the commands to run each test at the beginning; these commands can be used to test output and iterate on test checks
+- Lit tests live in the `test` directory of each module, with a `.mlir` extension
+- Only add checks for the relevant transformation code that is being tested - too many irrelevant checks is difficult to maintain and bad practice
+- Always run the lit test command to view test output before writing the CHECKs for FileCheck
 - Use FileCheck for output verification
 - Keep tests focused and minimal
 - Document expected behavior in test comments
 
+### Running Tests
+```bash
+# Run tests with ctest
+ctest --test-dir iree-build/ -R <regex-for-test-name>
+```
+
 ### Unit Tests
 - Follow GoogleTest conventions
 - Test edge cases explicitly
+
+## Refactoring Guidelines
+
+- When cleaning or refactoring code, do not change the existing lit tests to fix failures. Instead, debug and fix the refactored code.
+- Ensure that all `llvm::dbgs()` prints are wrapped in `LLVM_DEBUG()`, or use the `LDBG()` macro from `llvm/Support/DebugLog.h` to avoid printing unconditionally.
 
 ## Documentation
 

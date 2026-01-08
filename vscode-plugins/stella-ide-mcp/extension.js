@@ -147,6 +147,8 @@ async function openChangedFiles(args) {
     for (const filePath of result.files) {
         try {
             await openDiff({ path: filePath, ref: args.fromRef || 'HEAD~1' });
+            // Pin the editor so the next diff doesn't replace it
+            await vscode.commands.executeCommand('workbench.action.keepEditor');
             opened.push(filePath);
         } catch (e) {
             // Skip files that can't be opened (deleted, etc.)
