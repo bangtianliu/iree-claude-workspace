@@ -1,0 +1,52 @@
+# IREE/MLIR Claude Workspace .gitignore
+
+# Workspace state (vscode commands, active task tracking)
+.state/
+
+# Python virtual environment
+venv/
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Editor files
+.vscode/
+.idea/
+*.sublime-*
+
+# Build artifacts (if you ever test builds here)
+build/
+iree-build/
+*.o
+*.a
+*.so
+
+# Logs
+*.log
+
+# Personal notes that shouldn't be shared
+personal-notes/
+scratch/
+
+# Environment-specific configs
+.env
+.env.local
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Backup files
+*.bak
+*.backup
+
+# OS files
+Thumbs.db
+
+# Implementation plan (can remove after setup)
+# IMPLEMENTATION-PLAN.md
