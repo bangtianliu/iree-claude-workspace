@@ -8,6 +8,11 @@ const { exec } = require('child_process');
 const path = require('path');
 const url = require('url');
 
+// Feature modules
+var reviewHighlight = require('./src/reviewHighlight');
+var reviewInsert = require('./src/reviewInsert');
+var reviewPanel = require('./src/reviewPanel');
+
 let server = null;
 let outputChannel = null;
 
@@ -194,7 +199,7 @@ async function openChangedFiles(args) {
 
 async function runCommand(args) {
     const result = await vscode.commands.executeCommand(args.command, ...(args.args || []));
-    return { success: true, command: args.command, result: result ?? null };
+    return { success: true, command: args.command, result: result !== undefined ? result : null };
 }
 
 // Tool dispatcher
@@ -424,11 +429,71 @@ function activate(context) {
 
     context.subscriptions.push(statusCmd, { dispose: stopServer });
 
+    // Register review comment insertion commands
+    const insertRvwCmd = vscode.commands.registerCommand(
+        'stella-ide-mcp.insertRvw',
+        reviewInsert.promptAndInsertRvw
+    );
+    const insertRvwyCmd = vscode.commands.registerCommand(
+        'stella-ide-mcp.insertRvwy',
+        reviewInsert.promptAndInsertRvwy
+    );
+    context.subscriptions.push(insertRvwCmd, insertRvwyCmd);
+
+    // Register review panel WebView
+    log('=== Setting up Review Panel ===');
+    log('VIEW_TYPE from module: ' + reviewPanel.VIEW_TYPE);
+
+    // Set up the panel's logger to use our output channel
+    reviewPanel.setLogger(log);
+
+    var reviewPanelProvider = null;
+    try {
+        log('Creating ReviewPanelProvider...');
+        reviewPanelProvider = new reviewPanel.ReviewPanelProvider(context.extensionUri);
+        log('ReviewPanelProvider created');
+
+        log('Registering WebviewViewProvider for viewType: ' + reviewPanel.VIEW_TYPE);
+        var panelDisposable = vscode.window.registerWebviewViewProvider(
+            reviewPanel.VIEW_TYPE,
+            reviewPanelProvider,
+            {
+                webviewOptions: {
+                    retainContextWhenHidden: true
+                }
+            }
+        );
+        context.subscriptions.push(panelDisposable);
+        log('WebviewViewProvider registered successfully');
+    } catch (err) {
+        log('ERROR setting up review panel: ' + err.message);
+        log('Stack: ' + err.stack);
+    }
+
+    // Command to focus the review panel
+    var focusPanelCmd = vscode.commands.registerCommand(
+        'stella-ide-mcp.focusReviewPanel',
+        function() {
+            log('focusReviewPanel command called');
+            if (reviewPanelProvider) {
+                reviewPanelProvider.focus();
+            } else {
+                log('No reviewPanelProvider available');
+            }
+        }
+    );
+    context.subscriptions.push(focusPanelCmd);
+    log('=== Review Panel setup complete ===');
+
+    // Activate review comment highlighting
+    reviewHighlight.activate(context);
+
     log('Extension activated');
 }
 
 function deactivate() {
     stopServer();
+    reviewHighlight.deactivate();
 }
 
 module.exports = { activate, deactivate };

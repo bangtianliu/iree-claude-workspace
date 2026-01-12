@@ -2,21 +2,57 @@
   "name": "stella-ide-mcp",
   "displayName": "Stella IDE MCP Server",
   "description": "MCP server for Claude Code integration with VSCode",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "local",
   "engines": {
-    "vscode": "^1.85.0"
+    "vscode": "^1.74.0"
   },
   "categories": ["Other"],
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:stella-review-panel"
+  ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
         "command": "stella-ide-mcp.status",
         "title": "Stella IDE MCP: Show Status"
+      },
+      {
+        "command": "stella-ide-mcp.insertRvw",
+        "title": "Insert RVW Comment",
+        "category": "Stella Review"
+      },
+      {
+        "command": "stella-ide-mcp.insertRvwy",
+        "title": "Insert RVWY Comment",
+        "category": "Stella Review"
+      },
+      {
+        "command": "stella-ide-mcp.focusReviewPanel",
+        "title": "Focus Review Panel",
+        "category": "Stella Review"
       }
     ],
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "stella-review",
+          "title": "Review",
+          "icon": "$(comment-discussion)"
+        }
+      ]
+    },
+    "views": {
+      "stella-review": [
+        {
+          "type": "webview",
+          "id": "stella-review-panel",
+          "name": "Comment"
+        }
+      ]
+    },
     "configuration": {
       "title": "Stella IDE MCP",
       "properties": {
