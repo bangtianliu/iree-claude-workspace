@@ -64,7 +64,8 @@ const TOOLS = [
                 repoPath: { type: 'string', description: 'Path to git repository' },
                 fromRef: { type: 'string', description: 'Base ref (default: HEAD~1)' },
                 toRef: { type: 'string', description: 'Target ref (default: HEAD)' },
-                newWindow: { type: 'boolean', description: 'Move diffs to a new window' }
+                isolated: { type: 'boolean', description: 'Open in isolated maximized group with panel accessible (default: true if newWindow is true)' },
+                newWindow: { type: 'boolean', description: 'Legacy: move diffs to separate window (use isolated instead)' }
             },
             required: ['repoPath']
         }
@@ -159,9 +160,18 @@ async function openChangedFiles(args) {
     const result = await getChangedFiles(args);
     const opened = [];
 
-    // If newWindow requested, create a new editor group first so we only move the diffs
-    if (args.newWindow) {
+    // Determine view mode:
+    // - isolated: true (default if newWindow was true) = new group, maximized, panel accessible
+    // - newWindow: true with isolated: false = move to separate window (legacy)
+    const isolated = args.isolated !== undefined ? args.isolated : args.newWindow;
+    const newWindow = args.newWindow && !isolated;
+
+    log(`openChangedFiles: isolated=${isolated}, newWindow=${newWindow}, files=${result.files.length}`);
+
+    // Create a new editor group for isolation
+    if (isolated || newWindow) {
         await vscode.commands.executeCommand('workbench.action.newGroupRight');
+        log('Created new editor group');
     }
 
     for (const fileInfo of result.files) {
@@ -189,12 +199,20 @@ async function openChangedFiles(args) {
         }
     }
 
-    // Move the new group to its own window
-    if (args.newWindow && opened.length > 0) {
-        await vscode.commands.executeCommand('workbench.action.moveEditorGroupToNewWindow');
+    if (opened.length > 0) {
+        if (isolated) {
+            // Toggle maximize for the editor group - hides other groups completely
+            // Use toggleMaximizeEditorGroup which fully hides other groups
+            await vscode.commands.executeCommand('workbench.action.toggleMaximizeEditorGroup');
+            log('Toggled maximize for editor group - other groups hidden');
+        } else if (newWindow) {
+            // Legacy: move to separate window
+            await vscode.commands.executeCommand('workbench.action.moveEditorGroupToNewWindow');
+            log('Moved to new window');
+        }
     }
 
-    return { opened, total: result.files.length, newWindow: !!args.newWindow };
+    return { opened, total: result.files.length, isolated: !!isolated, newWindow: !!newWindow };
 }
 
 async function runCommand(args) {

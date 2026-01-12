@@ -101,9 +101,9 @@ execute_command() {
             local repo="${parts[1]}"
             local from_ref="${parts[2]:-HEAD~1}"
             local to_ref="${parts[3]:-HEAD}"
-            local new_window="${parts[4]:-false}"
-            echo "  Opening changed files: $repo ($from_ref..$to_ref)"
-            call_mcp_tool "openChangedFiles" "{\"repoPath\":\"$repo\",\"fromRef\":\"$from_ref\",\"toRef\":\"$to_ref\",\"newWindow\":$new_window}"
+            local isolated="${parts[4]:-true}"
+            echo "  Opening changed files: $repo ($from_ref..$to_ref) isolated=$isolated"
+            call_mcp_tool "openChangedFiles" "{\"repoPath\":\"$repo\",\"fromRef\":\"$from_ref\",\"toRef\":\"$to_ref\",\"isolated\":$isolated}"
             ;;
         openDiff)
             local file="${parts[1]}"
