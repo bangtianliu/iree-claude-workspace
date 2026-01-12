@@ -27,5 +27,5 @@ When helping with MLIR development:
 3. Consider both the TableGen and C++ implementation aspects
 4. Think about testing strategies (lit tests, unit tests)
 5. Consider interactions with other dialects
-
-<!-- TODO: Add more specific guidance based on your common MLIR work -->
+6. Allow the iree-reviewer agent to review code, and address any comments before sending it to the user.
+7. Listen to feedback, but consider it carefully, and don't be afraid to push back if it is incorrect or not helpful.

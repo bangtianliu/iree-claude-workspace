@@ -116,17 +116,32 @@ function getChangedFiles(args) {
         const toRef = args.toRef || 'HEAD';
         const repoPath = args.repoPath;
 
+        // Use --name-status to get file status (A=added, M=modified, D=deleted, R=renamed)
         exec(
-            `git diff --name-only ${fromRef}..${toRef}`,
+            `git diff --name-status ${fromRef}..${toRef}`,
             { cwd: repoPath },
             (error, stdout, stderr) => {
                 if (error) {
                     reject(new Error(`git diff failed: ${stderr}`));
                     return;
                 }
-                const files = stdout.trim().split('\n').filter(f => f);
+                const files = [];
+                for (const line of stdout.trim().split('\n')) {
+                    if (!line) continue;
+                    // Format: "M\tpath/to/file" or "R100\told\tnew" for renames
+                    const parts = line.split('\t');
+                    if (parts.length >= 2) {
+                        const status = parts[0].charAt(0); // First char: A, M, D, R, C, etc.
+                        // For renames (R) and copies (C), the new path is the last element
+                        const filePath = parts.length > 2 ? parts[parts.length - 1] : parts[1];
+                        files.push({
+                            path: path.join(repoPath, filePath),
+                            status: status
+                        });
+                    }
+                }
                 resolve({
-                    files: files.map(f => path.join(repoPath, f)),
+                    files,
                     fromRef,
                     toRef
                 });
@@ -144,14 +159,27 @@ async function openChangedFiles(args) {
         await vscode.commands.executeCommand('workbench.action.newGroupRight');
     }
 
-    for (const filePath of result.files) {
+    for (const fileInfo of result.files) {
+        const filePath = fileInfo.path;
+        const status = fileInfo.status;
+
         try {
-            await openDiff({ path: filePath, ref: args.fromRef || 'HEAD~1' });
-            // Pin the editor so the next diff doesn't replace it
+            if (status === 'D') {
+                // Deleted files - skip, nothing to show in current working tree
+                log(`Skipping deleted file: ${filePath}`);
+                continue;
+            } else if (status === 'A') {
+                // New files - open normally (no diff possible, file didn't exist before)
+                await openFile({ path: filePath });
+            } else {
+                // Modified, renamed, copied files - open in diff view
+                await openDiff({ path: filePath, ref: args.fromRef || 'HEAD~1' });
+            }
+            // Pin the editor so the next file doesn't replace it
             await vscode.commands.executeCommand('workbench.action.keepEditor');
             opened.push(filePath);
         } catch (e) {
-            // Skip files that can't be opened (deleted, etc.)
+            // Skip files that can't be opened
             log(`Skipping ${filePath}: ${e.message}`);
         }
     }
