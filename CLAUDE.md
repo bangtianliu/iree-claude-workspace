@@ -120,19 +120,39 @@ ctest --test-dir iree-build/
 
 See `STYLE-GUIDE.md` for workspace-specific conventions and notes.
 
+**IMPORTANT: Review Guidelines from Past PRs**
+
+Before starting work or submitting changes, consult the [CodeReviews repository](https://github.com/bangtianliu/CodeReviews) which contains patterns from 212 analyzed PRs with 1,154 review comments:
+
+**IREE Development** ([checklist](https://github.com/bangtianliu/CodeReviews/blob/main/iree/checklist_from_reviews.md) | [detailed reviews](https://github.com/bangtianliu/CodeReviews/blob/main/iree/detailed_reviews.md)):
+- LLVM coding patterns (auto usage, early exits, proper casting)
+- IREE/MLIR specifics (transform ops, ODS patterns, rewriter usage)
+- Never mutate IR directly - use rewriter methods
+- Return enums over integers from matchers
+- Extract complex logic into helper functions
+- Remove debug prints before merging
+
+**Tuner Development** ([checklist](https://github.com/bangtianliu/CodeReviews/blob/main/tuner/checklist_from_reviews.md) | [detailed reviews](https://github.com/bangtianliu/CodeReviews/blob/main/tuner/detailed_reviews.md)):
+- Function docstrings with clear return value descriptions
+- Active verb naming (compute/calculate, not passive forms)
+- Direct structure comparisons in tests
+- Split large PRs into focused changes
+- Avoid `Any` type annotations in Python
+- Keep testable logic separate from infrastructure
+
 ### Git Workflow
 
 #### Branch Naming
-Use the pattern: `users/Max191/<short-description>`
+Use the pattern: `users/bangtianliu/<short-description>`
 
 Examples:
-- `users/Max191/add-new-dialect-op`
-- `users/Max191/fix-pass-ordering`
+- `users/bangtianliu/add-new-dialect-op`
+- `users/bangtianliu/fix-pass-ordering`
 
 #### Creating a Branch and Committing
 ```bash
 # Create and switch to a new branch
-git checkout -b users/Max191/<description>
+git checkout -b users/bangtianliu/<description>
 
 # Stage changes
 git add <files>
@@ -234,10 +254,18 @@ This workspace uses the `stella-ide-mcp` VSCode extension for direct diff view c
 
 ## Reference
 
+### Official Documentation
 - [IREE Documentation](https://iree.dev/)
 - [IREE GitHub](https://github.com/iree-org/iree)
 - [MLIR Documentation](https://mlir.llvm.org/)
 - [LLVM Project](https://github.com/llvm/llvm-project)
+- [amdshark-ai](https://github.com/nod-ai/amd-shark-ai)
+
+### Code Review Guidelines
+Comprehensive review patterns from past PRs (212 PRs, 1,154 comments):
+- **IREE**: [Checklist](https://github.com/bangtianliu/CodeReviews/blob/main/iree/checklist_from_reviews.md) | [Detailed Reviews](https://github.com/bangtianliu/CodeReviews/blob/main/iree/detailed_reviews.md)
+- **Tuner**: [Checklist](https://github.com/bangtianliu/CodeReviews/blob/main/tuner/checklist_from_reviews.md) | [Detailed Reviews](https://github.com/bangtianliu/CodeReviews/blob/main/tuner/detailed_reviews.md)
+- [Repository Root](https://github.com/bangtianliu/CodeReviews)
 
 ## Notes
 

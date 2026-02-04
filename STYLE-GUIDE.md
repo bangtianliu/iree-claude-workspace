@@ -39,11 +39,11 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### Branch Naming
 
-Pattern: `users/Max191/<description>`
+Pattern: `users/bangtianliu/<description>`
 
 Examples:
-- `users/Max191/add-fold-pattern`
-- `users/Max191/fix-verifier-crash`
+- `users/bangtianliu/add-fold-pattern`
+- `users/bangtianliu/fix-verifier-crash`
 
 ## C++ Conventions
 
